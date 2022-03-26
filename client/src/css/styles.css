@@ -181,20 +181,27 @@ button {
   padding: 0 !important;
 }
 
+.ui.form .field > label {
+  font-weight: 500;
+}
+
 .ui.grid > .column {
   padding: 0 !important;
 }
 
 h3.ui.header {
   font-size: 15.7px !important;
+  font-weight: 500;
 }
 
 h4.ui.header {
   font-size: 14px !important;
+  font-weight: 500;
 }
 
 h5.ui.header {
   font-size: 12.3px !important;
+  font-weight: 500;
 }
 
 .ui.popup {

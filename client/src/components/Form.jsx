@@ -285,6 +285,7 @@ const Form = ({ fields, sendMail, disabledDays, availableFrom16, availableUntil1
       [getObject('arrivalTime').fi]: `klo ${data.arrivalTime}`,
       [getObject('departTime').fi]: `klo ${data.departTime}`,
       [getObject('personAmount').fi]: data.personAmount,
+      [getObject('budget').fi]: data.budget,
     };
     if (showPrice) {
       basicInfo.Hinta = `${calculatePrice()} €`;

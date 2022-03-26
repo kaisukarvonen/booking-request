@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form as SemanticForm, Popup, Header, Icon } from 'semantic-ui-react';
+import { Form as SemanticForm, Popup, Header, Icon, Button } from 'semantic-ui-react';
 import 'moment/locale/fi';
 import DatePicker from './DatePicker';
 import CompanyForm from './CompanyForm';
@@ -25,7 +25,7 @@ const BasicDetails = ({
   notVilla,
   numOfNights,
   privatePersonAcommodationPrice,
-  showWeekendPrices
+  showWeekendPrices,
 }) => {
   const timeOptions = () => {
     const options = new Array(17).fill(null).map((val, i) => {
@@ -61,6 +61,19 @@ const BasicDetails = ({
   const dateValue = dateToStr(from, to);
   return (
     <>
+      {isPrivate && (
+        <Button
+          compact
+          size="small"
+          basic
+          style={{ marginTop: 16 }}
+          onClick={() =>
+            (window.location.href = 'https://nuuksiontaika.johku.com/fi_FI/vuokraa-mokki-sauna-nuotiopaikka/mokki-nuuksio')
+          }
+        >
+          Osta majoitus verkkokaupasta
+        </Button>
+      )}
       <Header as="h3" dividing style={{ marginTop: 16 }}>
         Täytä yhteystiedot ja vierailusi ajankohta
       </Header>
@@ -163,6 +176,13 @@ const BasicDetails = ({
               onChange={handleOnChange}
             />
           </SemanticForm.Group>
+          <SemanticForm.Input
+            label={getObject('budget').fi}
+            width={8}
+            id="budget"
+            value={formData.budget}
+            onChange={handleOnChange}
+          />
           {isPrivate && formData.locationType === 'villaParatiisi' && (
             <PrivateAccommodation
               showWeekendPrices={showWeekendPrices}

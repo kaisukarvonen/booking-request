@@ -183,7 +183,7 @@ const BasicDetails = ({
             value={formData.budget}
             onChange={handleOnChange}
           />
-          {isPrivate && formData.locationType === 'villaParatiisi' && (
+          {/* {isPrivate && formData.locationType === 'villaParatiisi' && (
             <PrivateAccommodation
               showWeekendPrices={showWeekendPrices}
               numOfNights={numOfNights}
@@ -195,7 +195,7 @@ const BasicDetails = ({
               handleCottageChange={handleCottageChange}
               activePeriod={activePeriod}
             />
-          )}
+          )} */}
         </>
       )}
     </>

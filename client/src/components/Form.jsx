@@ -481,11 +481,22 @@ const Form = ({ fields, sendMail, disabledDays, availableFrom16, availableUntil1
                         <br />
                       </>
                     )}
-                    {reserveRightsToChanges}
                   </p>
 
                   <Message>
-                    <Message.Content>{getObject('paymentInfo')[formData.type].fi}</Message.Content>
+                    <Message.Content>
+                      {reserveRightsToChanges}
+                      {formData.type === 'private' ? (
+                        <div>
+                          Tutustu{' '}
+                          <a href="https://www.nuuksiontaika.fi/meista/ehdot/" target="_blank">
+                            varausehtoihin
+                          </a>
+                        </div>
+                      ) : (
+                        getObject('paymentInfo')[formData.type].fi
+                      )}
+                    </Message.Content>
                   </Message>
 
                   <SemanticForm.Button primary content="Lähetä" onClick={createMail} />

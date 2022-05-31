@@ -12,6 +12,26 @@ button {
   font-size: 13.7px !important;
 }
 
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+.location-selection {
+  padding: 1rem 0 0.4rem 0;
+}
+
+.location-selection .ui.checkbox label {
+  font-size: 14px !important;
+  font-weight: 500;
+}
+
 .ui.form,
 .ui.header,
 .ui.input > input,

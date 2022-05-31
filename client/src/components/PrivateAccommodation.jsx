@@ -13,17 +13,18 @@ const PrivateAccommodation = ({
   privatePersonAcommodationPrice,
   numOfNights,
   formData,
-  getObject,
   handleOnChange,
   getObjectInList,
   activePeriod,
   showWeekendPrices,
 }) => {
+  const { objectValue } = useObjectMapper();
+
   const { onlyWeekend, alsoWeekend } = showWeekendPrices();
   const extraPersons = getObjectInList('extraPersons', 'cottage')[activePeriod];
   const facilitiesStr = '2 huonetta (2+4 hlöä)';
   const facilities = { summer: facilitiesStr, winter: facilitiesStr };
-  const acommodationPrices = getObject('acommodationPrices');
+  const acommodationPrices = objectValue('acommodationPrices');
   const { cottagesAmount } = formData;
   const cottageInfo = () => {
     const choices = extraPersons.choices;
@@ -57,27 +58,6 @@ const PrivateAccommodation = ({
 
   return (
     <>
-      {/* {acommodationPrices.showInfo && (
-        <Message>
-          <Message.Header>Kesäkausi (touko-lokakuu)</Message.Header>
-          <Message.Content style={padded}>
-            {facilities.summer} /vrk {acommodationPrices.summer['1']} €, lisäksi 2 hlön huone mökissä{' '}
-            {getObjectInList('extraPersons', 'cottage').summer['1']} €/vrk
-            <br />
-            Lisäpäivät {acommodationPrices.summer['2']} €, lisähuone {getObjectInList('extraPersons', 'cottage').summer['2']}{' '}
-            €/vrk
-          </Message.Content>
-          <Message.Header>Talvikausi (marras-huhtikuu)</Message.Header>
-          <Message.Content style={padded}>
-            {facilities.winter} /vrk {acommodationPrices.winter['1']} €, lisäksi mökeissä 4 huonetta (9 vuodetta){' '}
-            {getObjectInList('extraPersons', 'cottage').winter['1']} €/huone
-            <br />
-            Lisäpäivät {acommodationPrices.winter['2']} €, lisähuone {getObjectInList('extraPersons', 'cottage').winter['2']}{' '}
-            €/vrk
-          </Message.Content>
-          Joulu ja Uusivuosi kesähinnoittelun mukaan. Hinta sisältää klo 16-12 välisen oleskelun.
-        </Message>
-      )} */}
       {formData.locationType === 'villaParatiisi' && formData.from && (
         <Grid className="extra-persons private-acommodation">
           {((onlyWeekend && numOfNights === 1) || alsoWeekend) &&

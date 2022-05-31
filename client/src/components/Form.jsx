@@ -7,6 +7,7 @@ import Extras from './Extras';
 import createHTML from './Template';
 import { validEmail, showInfo, reserveRightsToChanges } from '../utils';
 import BasicDetails from './BasicDetails';
+import { useObjectMapper } from '../helper/useObjectMapper';
 
 export const WainolaKeys = [
   { name: 'Sunnuntai-perjantai', key: 'weekDays' },
@@ -29,20 +30,34 @@ const initialForm = {
   cottages: [],
   activities: [],
   cottagesAmount: 0,
-  locationType: undefined,
+  locationObj: undefined,
 };
 
 const showPrice = false;
 const showAcommodationPrice = false;
 
-const Form = ({ fields, sendMail, disabledDays, availableFrom16, availableUntil12, customerType }) => {
+const Form = ({
+  fields,
+  sendMail,
+  disabledDays,
+  availableFrom16,
+  availableUntil12,
+  customerType,
+}) => {
   const [formData, setFormData] = useState({ ...initialForm, type: customerType });
   const [errors, setErrors] = useState({});
   const [popupOpen, setPopup] = useState(false);
   const [activePeriod, setActivePeriod] = useState(undefined);
+  const { objectValue, translation } = useObjectMapper();
 
   const getObject = (key) => fields.find((field) => field.key === key);
-  const getObjectInList = (key, innerKey) => getObject(key).options.find((option) => option.key === innerKey);
+  const getObjectTranslation = (key) => {
+    const value = getObject(key);
+    return value ? value.fi : key;
+  };
+
+  const getObjectInList = (key, innerKey) =>
+    getObject(key).options.find((option) => option.key === innerKey);
 
   const handleOnChange = (e, data) => {
     setFormData({
@@ -138,7 +153,8 @@ const Form = ({ fields, sendMail, disabledDays, availableFrom16, availableUntil1
     }
   };
 
-  const numOfNights = formData.from && formData.to ? moment(formData.to).diff(moment(formData.from), 'days') : 1;
+  const numOfNights =
+    formData.from && formData.to ? moment(formData.to).diff(moment(formData.from), 'days') : 1;
 
   const showWeekendPrices = () => {
     let onlyWeekend = false;
@@ -169,19 +185,26 @@ const Form = ({ fields, sendMail, disabledDays, availableFrom16, availableUntil1
       let cottageFirstNight = null;
       let cottageNextNights = null;
       if (cottagesAmount) {
-        cottagesPrices = numOfNights === 1 ? extraPersons['1'] : extraPersons['1'] + (numOfNights - 1) * extraPersons['2'];
-        cottageFirstNight = `Ensimmäinen vuorokausi ${cottagesAmount * extraPersons['1']} € / ${cottagesAmount} huonetta`;
+        cottagesPrices =
+          numOfNights === 1
+            ? extraPersons['1']
+            : extraPersons['1'] + (numOfNights - 1) * extraPersons['2'];
+        cottageFirstNight = `Ensimmäinen vuorokausi ${
+          cottagesAmount * extraPersons['1']
+        } € / ${cottagesAmount} huonetta`;
         cottageNextNights =
           numOfNights > 1
-            ? `Lisävuorokaudet ${(numOfNights - 1) * cottagesAmount * extraPersons['2']} € / ${cottagesAmount} huonetta / ${
-                numOfNights - 1
-              } yötä`
+            ? `Lisävuorokaudet ${
+                (numOfNights - 1) * cottagesAmount * extraPersons['2']
+              } € / ${cottagesAmount} huonetta / ${numOfNights - 1} yötä`
             : null;
       }
       const acTitle = `Majoitus ${numOfNights} vuorokautta`;
       const villaFirstNight = `Ensimmäinen vuorokausi ${acPrices['1']} €`;
       const villaNextNights =
-        numOfNights > 1 ? `Lisävuorokaudet ${(numOfNights - 1) * acPrices['2']} € / ${numOfNights - 1} yötä` : null;
+        numOfNights > 1
+          ? `Lisävuorokaudet ${(numOfNights - 1) * acPrices['2']} € / ${numOfNights - 1} yötä`
+          : null;
 
       return {
         villaPrice,
@@ -203,7 +226,8 @@ const Form = ({ fields, sendMail, disabledDays, availableFrom16, availableUntil1
     }
     const priceField = formData.type === 'company' ? 'price' : 'alvPrice';
     let price = 0;
-    const { linen, towels, hottub, meetingType, to, from, type, cottages, cleaning, petFee } = formData;
+    const { linen, towels, hottub, meetingType, to, from, type, cottages, cleaning, petFee } =
+      formData;
 
     price = meetingType ? getObjectInList('meetingOptions', formData.meetingType).price : 0;
     price +=
@@ -229,11 +253,15 @@ const Form = ({ fields, sendMail, disabledDays, availableFrom16, availableUntil1
       price += cleaning
         ? activePeriod === 'summer'
           ? getObject('cleaning').summer
-          : getObject('cleaning').winter.villa + getObject('cleaning').winter.cottage * numOfCottages
+          : getObject('cleaning').winter.villa +
+            getObject('cleaning').winter.cottage * numOfCottages
         : 0;
       getObject('extraPersons').options.forEach((o) => {
         if (o.key === 'cottage') {
-          price += numOfCottages > 0 && activePeriod !== 'summer' ? o.price * numOfNights * numOfCottages : 0;
+          price +=
+            numOfCottages > 0 && activePeriod !== 'summer'
+              ? o.price * numOfNights * numOfCottages
+              : 0;
         } else {
           price += formData[o.key] ? o.price * numOfNights : 0;
         }
@@ -329,58 +357,14 @@ const Form = ({ fields, sendMail, disabledDays, availableFrom16, availableUntil1
 
     const visitDetails = { title: 'Vierailun lisätiedot' };
     let visitString;
-    const {
-      locationType,
-      wainola,
-      haltia,
-      cottagesAmount,
-      villaParatiisi,
-      villaParatiisiFullWeekend,
-      villaParatiisiWeekend,
-      ilmanTiloja,
-    } = data;
-    if (data.meetingType && locationType === 'villaParatiisi') {
-      const object = getObjectInList('meetingOptions', data.meetingType);
-      // visitString = `${object.fi} - ${object.duration}h - ${object.price} € + alv`;
-      visitString = `${object.fi} - ${object.duration}h`;
-    } else if (data.visitType) {
+    const { locationObj } = data;
+    if (data.visitType) {
       visitString = getObject(data.visitType).fi;
     }
-
     visitDetails['Vierailun tyyppi'] = visitString || data.visitTypeString;
-    visitDetails.Tilat = locationType && getObject(locationType).fi;
-    if (locationType === 'wainola' && wainola) {
-      const dayType = wainola.includes(WainolaKeys[0].key) ? WainolaKeys[0] : WainolaKeys[1];
-      const wainolaObj = getObject('wainola')[dayType.key].find((o) => o.key === wainola);
-      visitDetails.Tilat += ` - ${dayType.name}: ${wainolaObj.text} - ${wainolaObj.duration}h`;
-    } else if (locationType === 'haltia' && haltia) {
-      const haltiaObj = getObjectInList('haltia', haltia);
-      // visitDetails.Tilat += ` - ${haltiaObj.fi} - ${haltiaObj.duration}h - ${haltiaObj.price} € + alv`;
-      visitDetails.Tilat += ` - ${haltiaObj.fi} - ${haltiaObj.duration}h`;
-      // } else if (locationType === 'ilmanTiloja' && ilmanTiloja) {
-      //   visitDetails.Tilat += ` - ${getObject('ilmanTiloja').price} € + alv`;
-    } else if (villaParatiisi || villaParatiisiWeekend || villaParatiisiFullWeekend) {
-      if (showAcommodationPrice) {
-        const { villaPrice, cottagesPrices, acTitle, villaFirstNight, villaNextNights, cottageFirstNight, cottageNextNights } =
-          privatePersonAcommodationPrice();
 
-        visitDetails[`${acTitle} ${villaPrice + cottagesPrices} € `] = [
-          <i>Huvila</i>,
-          villaFirstNight,
-          villaNextNights,
-          cottageFirstNight && <i>Lisähuoneet</i>,
-          cottageFirstNight,
-          cottageNextNights,
-        ];
-      } else {
-        visitDetails[`Majoitus ${numOfNights} vuorokautta`] = [
-          villaParatiisi && villaAcommodationTypes.villaParatiisi,
-          villaParatiisiWeekend && villaAcommodationTypes.villaParatiisiWeekend,
-          villaParatiisiFullWeekend && villaAcommodationTypes.villaParatiisiFullWeekend,
-          cottagesAmount ? `${cottagesAmount} lisähuonetta` : undefined,
-        ];
-      }
-    }
+    const { title, option } = locationObj;
+    visitDetails.Tilat = `${title} ${(option && `- ${option}`) || ''}`;
     visitDetails['Yrityksen nimi'] = data.companyName;
 
     return {
@@ -419,7 +403,11 @@ const Form = ({ fields, sendMail, disabledDays, availableFrom16, availableUntil1
               { text: 'Yksityisasiakas', type: 'private' },
             ].map((customer) => (
               <Grid.Column key={customer.type}>
-                <Button size="huge" active={formData.type === customer.type} onClick={() => setType(customer.type)}>
+                <Button
+                  size="huge"
+                  active={formData.type === customer.type}
+                  onClick={() => setType(customer.type)}
+                >
                   {customer.text}
                 </Button>
               </Grid.Column>
@@ -436,6 +424,7 @@ const Form = ({ fields, sendMail, disabledDays, availableFrom16, availableUntil1
                 formData={formData}
                 popupOpen={popupOpen}
                 getObject={getObject}
+                getObjectTranslation={getObjectTranslation}
                 getObjectInList={getObjectInList}
                 handleDayClick={handleDayClick}
                 handleOnChange={handleOnChange}
@@ -452,13 +441,19 @@ const Form = ({ fields, sendMail, disabledDays, availableFrom16, availableUntil1
               {Object.values(errors).some(Boolean) && (
                 <Message negative>
                   {Object.keys(errors).map(
-                    (errorKey) => errors[errorKey] && <Message.Content>{errors[errorKey]}</Message.Content>
+                    (errorKey) =>
+                      errors[errorKey] && <Message.Content>{errors[errorKey]}</Message.Content>
                   )}
                 </Message>
               )}
               {formData.from && (
                 <>
-                  <Extras getObject={getObject} showInfo={showInfo} values={formData} handleOnChange={handleOnChange} />
+                  <Extras
+                    getObject={getObject}
+                    showInfo={showInfo}
+                    values={formData}
+                    handleOnChange={handleOnChange}
+                  />
                   <SemanticForm.TextArea
                     rows={3}
                     autoHeight

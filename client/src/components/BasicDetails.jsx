@@ -4,12 +4,11 @@ import 'moment/locale/fi';
 import DatePicker from './DatePicker';
 import CompanyForm from './CompanyForm';
 import PrivatePersonForm from './PrivatePersonForm';
-import PrivateAccommodation from './PrivateAccommodation';
+import { useObjectMapper } from '../helper/useObjectMapper';
 
 const BasicDetails = ({
   formData,
   dateToStr,
-  getObject,
   handleOnChange,
   handleDayClick,
   popupOpen,
@@ -23,10 +22,9 @@ const BasicDetails = ({
   handleCottageChange,
   activePeriod,
   notVilla,
-  numOfNights,
-  privatePersonAcommodationPrice,
-  showWeekendPrices,
 }) => {
+  const { translation } = useObjectMapper();
+
   const timeOptions = () => {
     const options = new Array(17).fill(null).map((val, i) => {
       const time = 8 + i;
@@ -53,7 +51,7 @@ const BasicDetails = ({
       disabledDays={disabledDays}
       availableFrom16={availableFrom16}
       availableUntil12={availableUntil12}
-      alwaysAvailable={formData.locationType !== 'villaParatiisi'}
+      alwaysAvailable={!formData.locationObj?.useCalendar}
     />
   );
   const isPrivate = formData.type === 'private';
@@ -68,26 +66,41 @@ const BasicDetails = ({
           basic
           style={{ marginTop: 16 }}
           onClick={() =>
-            (window.location.href = 'https://nuuksiontaika.johku.com/fi_FI/vuokraa-mokki-sauna-nuotiopaikka/mokki-nuuksio')
+            (window.location.href =
+              'https://nuuksiontaika.johku.com/fi_FI/vuokraa-mokki-sauna-nuotiopaikka/mokki-nuuksio')
           }
         >
-          Osta majoitus verkkokaupasta
+          {translation('buyAccommodationButton')}
         </Button>
       )}
       <Header as="h3" dividing style={{ marginTop: 16 }}>
-        Täytä yhteystiedot ja vierailusi ajankohta
+        {translation('basicDetails')}
       </Header>
       <SemanticForm.Group widths="equal">
-        <SemanticForm.Input required label={getObject('name').fi} id="name" onChange={handleOnChange} />
-        <SemanticForm.Input required label={getObject('email').fi} id="email" onChange={handleOnChange} />
+        <SemanticForm.Input
+          required
+          label={translation('name')}
+          id="name"
+          onChange={handleOnChange}
+        />
+        <SemanticForm.Input
+          required
+          label={translation('email')}
+          id="email"
+          onChange={handleOnChange}
+        />
       </SemanticForm.Group>
       <SemanticForm.Group widths="equal">
-        <SemanticForm.Input label={getObject('phone').fi} id="phone" type="telsett" onChange={handleOnChange} />
-        <SemanticForm.Input label={getObject('address').fi} id="address" onChange={handleOnChange} />
+        <SemanticForm.Input
+          label={translation('phone')}
+          id="phone"
+          type="telsett"
+          onChange={handleOnChange}
+        />
+        <SemanticForm.Input label={translation('address')} id="address" onChange={handleOnChange} />
       </SemanticForm.Group>
       {isPrivate && (
         <PrivatePersonForm
-          getObject={getObject}
           handleOnChange={handleOnChange}
           handleOnRadioChange={handleOnRadioChange}
           values={formData}
@@ -97,14 +110,11 @@ const BasicDetails = ({
       )}
       {isCompany && (
         <CompanyForm
-          getObject={getObject}
           handleOnChange={handleOnChange}
-          handleOnRadioChange={handleOnRadioChange}
           values={formData}
-          showInfo={showInfo}
         />
       )}
-      {formData.locationType && (
+      {formData.locationObj?.title && (
         <>
           <SemanticForm.Group>
             <Popup
@@ -123,7 +133,7 @@ const BasicDetails = ({
                 <SemanticForm.Input
                   required
                   width={5}
-                  label={getObject('dates').fi}
+                  label={translation('dates')}
                   icon="calendar outline"
                   id="dates"
                   value={dateValue}
@@ -138,7 +148,7 @@ const BasicDetails = ({
             />
 
             <SemanticForm.Select
-              label={getObject('arrivalTime').fi}
+              label={translation('arrivalTime')}
               width={4}
               compact
               required
@@ -152,13 +162,10 @@ const BasicDetails = ({
               onChange={handleOnChange}
             />
             <SemanticForm.Select
-              label={getObject('departTime').fi}
+              label={translation('departTime')}
               width={4}
               compact
               required
-              style={{
-                pointerEvents: isCompany || notVilla ? 'auto' : 'none',
-              }}
               placeholder="hh:mm"
               options={timeOptions()}
               value={formData.departTime}
@@ -167,7 +174,7 @@ const BasicDetails = ({
             />
             <SemanticForm.Input
               type="number"
-              label={getObject('personAmount').fi}
+              label={translation('personAmount')}
               width={3}
               min="1"
               required
@@ -177,25 +184,12 @@ const BasicDetails = ({
             />
           </SemanticForm.Group>
           <SemanticForm.Input
-            label={getObject('budget').fi}
+            label={translation('budget')}
             width={8}
             id="budget"
             value={formData.budget}
             onChange={handleOnChange}
           />
-          {/* {isPrivate && formData.locationType === 'villaParatiisi' && (
-            <PrivateAccommodation
-              showWeekendPrices={showWeekendPrices}
-              numOfNights={numOfNights}
-              privatePersonAcommodationPrice={privatePersonAcommodationPrice}
-              formData={formData}
-              getObject={getObject}
-              handleOnChange={handleOnChange}
-              getObjectInList={getObjectInList}
-              handleCottageChange={handleCottageChange}
-              activePeriod={activePeriod}
-            />
-          )} */}
         </>
       )}
     </>

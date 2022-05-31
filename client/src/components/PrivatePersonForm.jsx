@@ -1,55 +1,44 @@
 import React from 'react';
 import { Header, Form, Button } from 'semantic-ui-react';
-import Wainola from './Wainola';
+import LocationSelection from './LocationSelection';
+import { useObjectMapper } from '../helper/useObjectMapper';
 
-const PrivatePersonForm = ({ values, getObject, handleOnChange, handleOnRadioChange }) => {
+const PrivatePersonForm = ({ values, handleOnChange, handleOnRadioChange }) => {
+  const { translation } = useObjectMapper();
+
   return (
     <div>
-      <Header as="h4">{getObject('visitTypeTitle').fi}</Header>
+      <Header as="h4">{translation('visitTypeTitle')}</Header>
       <Form.Radio
-        label={getObject('birthday').fi}
+        label={translation('birthday')}
         value="birthday"
         checked={values.visitType === 'birthday'}
         onChange={(e, data) => handleOnRadioChange(e, data, 'visitType')}
       />
       <Form.Radio
-        label={getObject('bachelor').fi}
+        label={translation('bachelor')}
         value="bachelor"
         checked={values.visitType === 'bachelor'}
         onChange={(e, data) => handleOnRadioChange(e, data, 'visitType')}
       />
       <Form.Radio
-        label={getObject('party').fi}
+        label={translation('party')}
         value="party"
         checked={values.visitType === 'party'}
         onChange={(e, data) => handleOnRadioChange(e, data, 'visitType')}
       />
       <Form.Input
         width={8}
-        label={getObject('visitTypeString').fi}
+        label={translation('visitTypeString')}
         id="visitTypeString"
         value={values.visitTypeString}
         onChange={handleOnChange}
       />
-
-      <Header as="h3">Millaisen päivän haluat viettää?</Header>
-      <div className="flex-column" style={{ marginBottom: 15 }}>
-        <Button
-          active={values.locationType === 'villaParatiisi'}
-          compact
-          size="small"
-          basic
-          onClick={() => handleOnChange(null, { id: 'locationType', value: 'villaParatiisi' })}
-        >
-          <b>{getObject('villaParatiisi').fi}</b> - rantahuvila
-        </Button>
-        <Wainola
-          getObject={getObject}
-          handleOnChange={handleOnChange}
-          handleOnRadioChange={handleOnRadioChange}
-          values={values}
-        />
-      </div>
+      <LocationSelection
+        handleOnChange={handleOnChange}
+        values={values}
+        visitType="privateAccommodations"
+      />
     </div>
   );
 };

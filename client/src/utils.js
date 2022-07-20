@@ -1,24 +1,29 @@
 import axios from 'axios';
 import React from 'react';
 import moment from 'moment';
-import { GOOGLE_API_KEY, CALENDAR_ID } from './config';
+import { GOOGLE_API_KEY, CALENDAR_ID, WAINOLA_CALENDAR_ID } from './config';
 
 export const lan = new URLSearchParams(window.location.search).get('language') || 'fi';
 
-export const getCalendarEvents = () => {
+export const getCalendarEvents = ({ wainolaCalendar }) => {
   const minDate = moment().startOf('day').toISOString();
   // const minDate = moment().add(1, 'months').toISOString();
   const maxDate = moment().startOf('day').add(14, 'months').toISOString();
   const promise = axios
-    .get(`https://www.googleapis.com/calendar/v3/calendars/${CALENDAR_ID}/events`, {
-      params: {
-        key: GOOGLE_API_KEY,
-        timeMin: minDate,
-        timeMax: maxDate,
-        orderBy: 'startTime',
-        singleEvents: true,
-      },
-    })
+    .get(
+      `https://www.googleapis.com/calendar/v3/calendars/${
+        wainolaCalendar ? WAINOLA_CALENDAR_ID : CALENDAR_ID
+      }/events`,
+      {
+        params: {
+          key: GOOGLE_API_KEY,
+          timeMin: minDate,
+          timeMax: maxDate,
+          orderBy: 'startTime',
+          singleEvents: true,
+        },
+      }
+    )
     .then((response) => response)
     .catch((error) => error);
   return promise;
@@ -88,7 +93,10 @@ export const showInfo = (object) => {
   if (info && info.includes('*s_link*')) {
     const link = '*s_link*';
     const address = info.substring(info.indexOf(link) + link.length, info.indexOf('*e_link*'));
-    const linkName = info.substring(info.indexOf('*s_text*') + link.length, info.indexOf('*e_text*'));
+    const linkName = info.substring(
+      info.indexOf('*s_text*') + link.length,
+      info.indexOf('*e_text*')
+    );
     info = (
       <span>
         {info.substring(0, info.indexOf(link))}

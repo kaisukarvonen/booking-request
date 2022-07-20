@@ -5,9 +5,10 @@ import bodyParser from 'body-parser';
 import fieldController from './routes/fieldController';
 import mailController from './routes/mailController';
 
-mongoose.connect(process.env.MONGO_URL);
+mongoose.set('useNewUrlParser', true);
+mongoose.set('useUnifiedTopology', true);
 
-console.log('origin', process.env.ORIGIN);
+mongoose.connect(process.env.MONGO_URL);
 
 const app = express();
 app.use(cors({ origin: process.env.ORIGIN }));

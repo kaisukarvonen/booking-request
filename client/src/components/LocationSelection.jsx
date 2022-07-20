@@ -1,5 +1,5 @@
 import React, { Fragment, useState } from 'react';
-import { Header, Form, Icon, Accordion, Checkbox } from 'semantic-ui-react';
+import { Header, Icon, Accordion, Checkbox } from 'semantic-ui-react';
 import { useObjectMapper } from '../helper/useObjectMapper';
 
 const LocationSelection = ({ values, handleOnChange, visitType }) => {

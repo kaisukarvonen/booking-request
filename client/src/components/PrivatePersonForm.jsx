@@ -34,11 +34,6 @@ const PrivatePersonForm = ({ values, handleOnChange, handleOnRadioChange }) => {
         value={values.visitTypeString}
         onChange={handleOnChange}
       />
-      <LocationSelection
-        handleOnChange={handleOnChange}
-        values={values}
-        visitType="privateAccommodations"
-      />
     </div>
   );
 };

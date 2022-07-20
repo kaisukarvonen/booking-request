@@ -23,8 +23,10 @@ const DatePicker = ({
   };
   const pastDays = { before: new Date() };
 
+  if (loading) return null;
+
   return (
-    <div className={className || ''} style={{ opacity: loading ? 0 : 1 }}>
+    <div className={className || ''}>
       <DayPicker
         localeUtils={MomentLocaleUtils}
         locale="fi"
@@ -48,7 +50,9 @@ const DatePicker = ({
         fromMonth={new Date()}
         className={`Selectable ${calendarOnly ? 'calendar-only' : ''}`}
         onDayClick={handleDayClick}
-        modifiers={!alwaysAvailable ? { ...modifiers, availableFrom16, availableUntil12 } : modifiers}
+        modifiers={
+          !alwaysAvailable ? { ...modifiers, availableFrom16, availableUntil12 } : modifiers
+        }
         selectedDays={[from, { from, to }]}
         disabledDays={alwaysAvailable ? [pastDays] : [pastDays, ...disabledDays]}
       />
@@ -85,7 +89,9 @@ const DatePicker = ({
               compact
               size="small"
               basic
-              onClick={() => (window.parent.location.href = 'https://www.nuuksiontaika.fi/tarjouspyynto/')}
+              onClick={() =>
+                (window.parent.location.href = 'https://www.nuuksiontaika.fi/tarjouspyynto/')
+              }
             >
               Pyydä tarjous
             </Button>
@@ -97,7 +103,8 @@ const DatePicker = ({
               size="small"
               basic
               onClick={() =>
-                (window.location.href = 'https://nuuksiontaika.johku.com/fi_FI/vuokraa-mokki-sauna-nuotiopaikka/mokki-nuuksio')
+                (window.location.href =
+                  'https://nuuksiontaika.johku.com/fi_FI/vuokraa-mokki-sauna-nuotiopaikka/mokki-nuuksio')
               }
             >
               Osta majoitus verkkokaupasta

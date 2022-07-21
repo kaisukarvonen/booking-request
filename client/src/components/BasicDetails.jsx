@@ -75,47 +75,11 @@ const BasicDetails = ({
           >
             {translation('buyAccommodationButton')}
           </Button>
-          <Header as="h3" style={{ marginTop: 16 }}>
+          <Header as="h3" dividing style={{ marginTop: 16 }}>
             {translation('wainolaTitle')}
           </Header>
         </>
       )}
-      <Header as="h3" dividing style={{ marginTop: 16 }}>
-        {translation('basicDetails')}
-      </Header>
-      <SemanticForm.Group widths="equal">
-        <SemanticForm.Input
-          required
-          label={translation('name')}
-          id="name"
-          onChange={handleOnChange}
-        />
-        <SemanticForm.Input
-          required
-          label={translation('email')}
-          id="email"
-          onChange={handleOnChange}
-        />
-      </SemanticForm.Group>
-      <SemanticForm.Group widths="equal">
-        <SemanticForm.Input
-          label={translation('phone')}
-          id="phone"
-          type="telsett"
-          onChange={handleOnChange}
-        />
-        <SemanticForm.Input label={translation('address')} id="address" onChange={handleOnChange} />
-      </SemanticForm.Group>
-      {isPrivate && (
-        <PrivatePersonForm
-          handleOnChange={handleOnChange}
-          handleOnRadioChange={handleOnRadioChange}
-          values={formData}
-          handleCottageChange={handleCottageChange}
-          activePeriod={activePeriod}
-        />
-      )}
-      {isCompany && <CompanyForm handleOnChange={handleOnChange} values={formData} />}
       {(formData.locationObj?.title || isPrivate) && (
         <>
           <SemanticForm.Group>
@@ -191,6 +155,42 @@ const BasicDetails = ({
           />
         </>
       )}
+      {isPrivate && (
+        <PrivatePersonForm
+          handleOnChange={handleOnChange}
+          handleOnRadioChange={handleOnRadioChange}
+          values={formData}
+          handleCottageChange={handleCottageChange}
+          activePeriod={activePeriod}
+        />
+      )}
+      {isCompany && <CompanyForm handleOnChange={handleOnChange} values={formData} />}
+      <Header as="h3" dividing style={{ marginTop: 16 }}>
+        {translation('basicDetails')}
+      </Header>
+      <SemanticForm.Group widths="equal">
+        <SemanticForm.Input
+          required
+          label={translation('name')}
+          id="name"
+          onChange={handleOnChange}
+        />
+        <SemanticForm.Input
+          required
+          label={translation('email')}
+          id="email"
+          onChange={handleOnChange}
+        />
+      </SemanticForm.Group>
+      <SemanticForm.Group widths="equal">
+        <SemanticForm.Input
+          label={translation('phone')}
+          id="phone"
+          type="telsett"
+          onChange={handleOnChange}
+        />
+        <SemanticForm.Input label={translation('address')} id="address" onChange={handleOnChange} />
+      </SemanticForm.Group>
     </>
   );
 };

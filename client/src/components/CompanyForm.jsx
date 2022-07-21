@@ -8,17 +8,17 @@ const CompanyForm = ({ values, handleOnChange }) => {
 
   return (
     <>
+      <LocationSelection
+        handleOnChange={handleOnChange}
+        values={values}
+        visitType="companyAccommodations"
+      />
       <Form.Input
         width={8}
         label={translation('companyName')}
         id="companyName"
         value={values.companyName}
         onChange={handleOnChange}
-      />
-      <LocationSelection
-        handleOnChange={handleOnChange}
-        values={values}
-        visitType="companyAccommodations"
       />
     </>
   );

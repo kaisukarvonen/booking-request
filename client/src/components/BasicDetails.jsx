@@ -17,11 +17,9 @@ const BasicDetails = ({
   disabledDays,
   availableFrom16,
   availableUntil12,
-  showInfo,
   handleOnRadioChange,
   handleCottageChange,
   activePeriod,
-  notVilla,
 }) => {
   const { translation } = useObjectMapper();
 
@@ -38,6 +36,9 @@ const BasicDetails = ({
   };
 
   const { from, to } = formData;
+  const isPrivate = formData.type === 'private';
+
+  const calendarType = isPrivate || formData.locationObj?.useWainolaCalendar ? 'wainola' : 'villa';
 
   const renderDatePicker = (className, compact) => (
     <DatePicker
@@ -46,32 +47,38 @@ const BasicDetails = ({
       compact={compact}
       to={to}
       handleDayClick={handleDayClick}
-      until12Info={formData.until12Info}
-      from16Info={formData.from16Info}
-      disabledDays={disabledDays}
-      availableFrom16={availableFrom16}
-      availableUntil12={availableUntil12}
-      alwaysAvailable={!formData.locationObj?.useCalendar}
+      disabledDays={disabledDays[calendarType]}
+      availableFrom16={availableFrom16[calendarType]}
+      availableUntil12={availableUntil12[calendarType]}
+      alwaysAvailable={
+        isCompany &&
+        !formData.locationObj?.useVillaCalendar &&
+        !formData.locationObj?.useWainolaCalendar
+      }
     />
   );
-  const isPrivate = formData.type === 'private';
   const isCompany = formData.type === 'company';
   const dateValue = dateToStr(from, to);
   return (
     <>
       {isPrivate && (
-        <Button
-          compact
-          size="small"
-          basic
-          style={{ marginTop: 16 }}
-          onClick={() =>
-            (window.location.href =
-              'https://nuuksiontaika.johku.com/fi_FI/vuokraa-mokki-sauna-nuotiopaikka/mokki-nuuksio')
-          }
-        >
-          {translation('buyAccommodationButton')}
-        </Button>
+        <>
+          <Button
+            compact
+            size="small"
+            basic
+            style={{ marginTop: 16 }}
+            onClick={() =>
+              (window.location.href =
+                'https://nuuksiontaika.johku.com/fi_FI/vuokraa-mokki-sauna-nuotiopaikka/mokki-nuuksio')
+            }
+          >
+            {translation('buyAccommodationButton')}
+          </Button>
+          <Header as="h3" style={{ marginTop: 16 }}>
+            {translation('wainolaTitle')}
+          </Header>
+        </>
       )}
       <Header as="h3" dividing style={{ marginTop: 16 }}>
         {translation('basicDetails')}
@@ -108,13 +115,8 @@ const BasicDetails = ({
           activePeriod={activePeriod}
         />
       )}
-      {isCompany && (
-        <CompanyForm
-          handleOnChange={handleOnChange}
-          values={formData}
-        />
-      )}
-      {formData.locationObj?.title && (
+      {isCompany && <CompanyForm handleOnChange={handleOnChange} values={formData} />}
+      {(formData.locationObj?.title || isPrivate) && (
         <>
           <SemanticForm.Group>
             <Popup
@@ -152,9 +154,6 @@ const BasicDetails = ({
               width={4}
               compact
               required
-              style={{
-                pointerEvents: isCompany || notVilla ? 'auto' : 'none',
-              }}
               placeholder="hh:mm"
               options={timeOptions()}
               value={formData.arrivalTime}

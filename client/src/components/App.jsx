@@ -5,7 +5,7 @@ import { Loader, Dimmer } from 'semantic-ui-react';
 import * as fieldActions from '../dux/fields';
 import * as mailActions from '../dux/mail';
 import * as notificationActions from '../dux/notification';
-import '../css/styles.css';
+import '../css/styles.scss';
 import '../css/DayPicker.scss';
 import ErrorBoundary from './ErrorBoundary';
 import Notification from './Notification';
@@ -14,22 +14,35 @@ import DatePicker from './DatePicker';
 import { getCalendarEvents, formatDates } from '../utils';
 
 const App = ({ hideNotification, notification, fetchFields, fields, sendingEmail, sendMail }) => {
-  const [disabled, setDisabledDays] = useState([]);
-  const [availableFrom16, setAvailableFrom16] = useState([]);
-  const [availableUntil12, setAvailableUntil12] = useState([]);
+  const [disabled, setDisabledDays] = useState({});
+  const [availableFrom16, setAvailableFrom16] = useState({});
+  const [availableUntil12, setAvailableUntil12] = useState({});
   const [loading, setLoading] = useState(true);
+  const showCalendarOnly = window.location.href.includes('calendar');
+
   useEffect(() => {
     fetchFields();
-    getCalendarEvents().then((response) => {
-      const { disabledDays, from16, until12 } = formatDates(response.data.items);
-      setDisabledDays(disabledDays);
-      setAvailableFrom16(from16);
-      setAvailableUntil12(until12);
-      setLoading(false);
-    });
+    let disabledDaysData;
+    let from16Data;
+    let until12Data;
+    getCalendarEvents({})
+      .then((response) => {
+        const { disabledDays, from16, until12 } = formatDates(response.data.items);
+        disabledDaysData = disabledDays;
+        from16Data = from16;
+        until12Data = until12;
+      })
+      .then(() => {
+        getCalendarEvents({ wainolaCalendar: true }).then((response) => {
+          const { disabledDays, from16, until12 } = formatDates(response.data.items);
+          setDisabledDays({ wainola: disabledDays, villa: disabledDaysData });
+          setAvailableFrom16({ wainola: from16, villa: from16Data });
+          setAvailableUntil12({ wainola: until12, villa: until12Data });
+          setLoading(false);
+        });
+      });
   }, []);
 
-  const showCalendarOnly = () => window.location.href.includes('calendar');
   const customerType = () => {
     const url = window.location.href;
     let type = undefined;
@@ -48,13 +61,13 @@ const App = ({ hideNotification, notification, fetchFields, fields, sendingEmail
           <Dimmer active={sendingEmail} inverted>
             <Loader inverted>Viestiäsi lähetetään ...</Loader>
           </Dimmer>
-          {showCalendarOnly() ? (
+          {showCalendarOnly ? (
             <DatePicker
-              disabledDays={disabled}
-              availableFrom16={availableFrom16}
-              availableUntil12={availableUntil12}
-              loading={loading}
+              disabledDays={disabled.villa}
+              availableFrom16={availableFrom16.villa}
+              availableUntil12={availableUntil12.villa}
               compact
+              loading={loading}
               calendarOnly
             />
           ) : (

@@ -1,6 +1,14 @@
 import React, { useState } from 'react';
 import ReactDOMServer from 'react-dom/server';
-import { Container, Header, Form as SemanticForm, Message, Grid, Button } from 'semantic-ui-react';
+import {
+  Container,
+  Header,
+  Form as SemanticForm,
+  TextArea,
+  Message,
+  Grid,
+  Button,
+} from 'semantic-ui-react';
 import 'moment/locale/fi';
 import moment from 'moment';
 import Extras from './Extras';
@@ -14,12 +22,6 @@ export const WainolaKeys = [
   { name: 'Lauantai', key: 'weekend' },
 ];
 
-export const villaAcommodationTypes = {
-  villaParatiisiFullWeekend: 'Pe-su (2 vrk)',
-  villaParatiisiWeekend: 'Pe-la / la-su (1 vrk)',
-  villaParatiisi: 'Su-pe',
-};
-
 const initialForm = {
   from: undefined,
   to: undefined,
@@ -32,9 +34,6 @@ const initialForm = {
   cottagesAmount: 0,
   locationObj: undefined,
 };
-
-const showPrice = false;
-const showAcommodationPrice = false;
 
 const Form = ({
   fields,
@@ -103,11 +102,9 @@ const Form = ({
     return new Array(getObjectInList('extraPersons', 'cottage')[period].choices.length).fill(false);
   };
 
-  const notVilla = formData.locationType !== 'villaParatiisi';
-
   const handleDayClick = (day, modifiers) => {
     let { to, from } = formData;
-    if (!from || notVilla) {
+    if (!from) {
       from = day;
     } else if (!to) {
       to = day;
@@ -147,9 +144,6 @@ const Form = ({
         from16Info: modifiers.availableFrom16,
         cottages,
       });
-      if (notVilla) {
-        toggleDatePicker();
-      }
     }
   };
 
@@ -224,50 +218,6 @@ const Form = ({
     if (!showPrice) {
       return;
     }
-    const priceField = formData.type === 'company' ? 'price' : 'alvPrice';
-    let price = 0;
-    const { linen, towels, hottub, meetingType, to, from, type, cottages, cleaning, petFee } =
-      formData;
-
-    price = meetingType ? getObjectInList('meetingOptions', formData.meetingType).price : 0;
-    price +=
-      (linen ? getObject('linen')[priceField] * formData.personAmount : 0) +
-      (towels ? getObject('towels')[priceField] * formData.personAmount : 0) +
-      (petFee ? getObject('petFee')[priceField] : 0) +
-      (hottub ? getObject('hottub')[priceField] : 0);
-    getObject('rentalEquipment').options.forEach((option) => {
-      price += formData[option.key] ? option[priceField] || option.alvPrice : 0;
-    });
-    // let activePeriod = '';
-    if (type !== 'company' && (to || from)) {
-      let numOfNights = 1;
-      if (from && to) {
-        numOfNights = moment(to).diff(moment(from), 'days');
-      }
-      price +=
-        numOfNights < 2
-          ? getObject('acommodationPrices')[activePeriod]['1']
-          : getObject('acommodationPrices')[activePeriod]['1'] +
-            (numOfNights - 1) * getObject('acommodationPrices')[activePeriod]['2'];
-      const numOfCottages = cottages.filter(Boolean).length;
-      price += cleaning
-        ? activePeriod === 'summer'
-          ? getObject('cleaning').summer
-          : getObject('cleaning').winter.villa +
-            getObject('cleaning').winter.cottage * numOfCottages
-        : 0;
-      getObject('extraPersons').options.forEach((o) => {
-        if (o.key === 'cottage') {
-          price +=
-            numOfCottages > 0 && activePeriod !== 'summer'
-              ? o.price * numOfNights * numOfCottages
-              : 0;
-        } else {
-          price += formData[o.key] ? o.price * numOfNights : 0;
-        }
-      });
-    }
-    return price;
   };
 
   const isValid = () => {
@@ -315,11 +265,7 @@ const Form = ({
       [getObject('personAmount').fi]: data.personAmount,
       [getObject('budget').fi]: data.budget,
     };
-    if (showPrice) {
-      basicInfo.Hinta = `${calculatePrice()} €`;
-    }
-    const isCompany = formData.type === 'company';
-    const priceField = isCompany ? 'price' : 'alvPrice';
+    const isPrivate = formData.type === 'private';
 
     const food = {
       Tarjoilut: getObject('foodOptions')
@@ -333,19 +279,14 @@ const Form = ({
         .options.filter((eq) => data[eq.key])
         .map((eq) => {
           const field = getObjectInList('rentalEquipment', eq.key);
-          // const price = field[priceField] || field.alvPrice;
-          // return `${field.fi} ${price ? `(${price} €)` : ''}`;
           return field.fi;
         }),
     };
 
-    const services = ['linen', 'towels', 'hottub', 'cleaning', 'petFee'];
-    const selectedServices = services
-      .filter((service) => data[service])
-      .map((s) => {
-        const field = getObject(s);
-        // const price = field[priceField] || field.alvPrice;
-        // return `${field.fi} ${price ? `( ${price} € )` : ''}`;
+    const selectedServices = getObject('extraServices')
+      .options.filter((eq) => data[eq.key])
+      .map((eq) => {
+        const field = getObjectInList('extraServices', eq.key);
         return field.fi;
       });
     const allServices = selectedServices.concat(
@@ -363,8 +304,12 @@ const Form = ({
     }
     visitDetails['Vierailun tyyppi'] = visitString || data.visitTypeString;
 
-    const { title, option } = locationObj;
-    visitDetails.Tilat = `${title} ${(option && `- ${option}`) || ''}`;
+    if (!locationObj && isPrivate) {
+      visitDetails.Tilat = 'Wäinölä';
+    } else {
+      const { title, option } = locationObj;
+      visitDetails.Tilat = `${title} ${(option && `- ${option}`) || ''}`;
+    }
     visitDetails['Yrityksen nimi'] = data.companyName;
 
     return {
@@ -417,10 +362,6 @@ const Form = ({
           {formData.type && (
             <>
               <BasicDetails
-                showWeekendPrices={showWeekendPrices}
-                numOfNights={numOfNights}
-                privatePersonAcommodationPrice={privatePersonAcommodationPrice}
-                notVilla={notVilla}
                 formData={formData}
                 popupOpen={popupOpen}
                 getObject={getObject}
@@ -454,29 +395,15 @@ const Form = ({
                     values={formData}
                     handleOnChange={handleOnChange}
                   />
-                  <SemanticForm.TextArea
-                    rows={3}
-                    autoHeight
-                    label="Lisätietoja tarjouspyyntöön"
+                  <Header as="h3" dividing>
+                    {translation('moreInformationTitle')}
+                  </Header>
+                  <TextArea
+                    rows={2}
                     value={formData.moreInformation}
                     id="moreInformation"
                     onChange={handleOnChange}
                   />
-                  {showPrice && (
-                    <Header as="h4" dividing>
-                      Alustava hinta
-                    </Header>
-                  )}
-                  <p>
-                    {showPrice && (
-                      <>
-                        {`Alustava hinta ${
-                          formData.type === 'company' ? '(alv 0%)' : ''
-                        } sisältäen hinnoitellut palvelut: ${calculatePrice()} €`}
-                        <br />
-                      </>
-                    )}
-                  </p>
 
                   <Message>
                     <Message.Content>

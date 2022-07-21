@@ -80,6 +80,7 @@ const BasicDetails = ({
           </Header>
         </>
       )}
+      {isCompany && <CompanyForm handleOnChange={handleOnChange} values={formData} />}
       {(formData.locationObj?.title || isPrivate) && (
         <>
           <SemanticForm.Group>
@@ -164,7 +165,6 @@ const BasicDetails = ({
           activePeriod={activePeriod}
         />
       )}
-      {isCompany && <CompanyForm handleOnChange={handleOnChange} values={formData} />}
       <Header as="h3" dividing style={{ marginTop: 16 }}>
         {translation('basicDetails')}
       </Header>

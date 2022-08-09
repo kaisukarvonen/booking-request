@@ -9,8 +9,6 @@ node_modules
 rfo-env/
 images/
 fabfile.py
-Dockerfile.*
-docker-compose.prod.yml*
 client/src/config.js
 client/.cache
 client/dist

@@ -1,8 +1,9 @@
 import React from 'react';
-import MomentLocaleUtils from 'react-day-picker/moment';
-import DayPicker from 'react-day-picker';
+// import MomentLocaleUtils from 'react-day-picker/moment';
+import { DayPicker } from 'react-day-picker';
 import { Label, Button } from 'semantic-ui-react';
-import 'moment/locale/fi';
+// import 'moment/locale/fi';
+import fi from 'date-fns/locale/fi';
 
 const DatePicker = ({
   handleDayClick,
@@ -18,18 +19,16 @@ const DatePicker = ({
   alwaysAvailable,
 }) => {
   const modifiers = {
-    start: from,
-    end: to,
+    from,
+    to,
   };
   const pastDays = { before: new Date() };
 
   if (loading) return null;
-
   return (
     <div className={className || ''}>
       <DayPicker
-        localeUtils={MomentLocaleUtils}
-        locale="fi"
+        locale={fi}
         months={
           calendarOnly && [
             'tammi / january',
@@ -53,8 +52,14 @@ const DatePicker = ({
         modifiers={
           !alwaysAvailable ? { ...modifiers, availableFrom16, availableUntil12 } : modifiers
         }
-        selectedDays={[from, { from, to }]}
-        disabledDays={alwaysAvailable ? [pastDays] : [pastDays, ...disabledDays]}
+        modifiersClassNames={{
+          from: 'from',
+          to: 'to',
+          availableFrom16: 'availableFrom16',
+          availableUntil12: 'availableUntil12',
+        }}
+        selected={[from, { from, to }]}
+        disabled={alwaysAvailable ? [pastDays] : [pastDays, ...disabledDays]}
       />
       {!alwaysAvailable && (
         <div style={{ margin: '0 0 0 20px' }}>

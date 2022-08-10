@@ -1,15 +1,7 @@
-.DayPicker:not(.DayPicker--interactionDisabled)
-  .DayPicker-Day:not(.DayPicker-Day--disabled):not(.DayPicker-Day--selected):not(.DayPicker-Day--outside):hover {
-  background-color: #7dbc5e;
-  color: #fff;
-}
-
-/* DayPicker styles */
-.DayPicker-Day--selected:not(.DayPicker-Day--disabled):not(.DayPicker-Day--outside) {
-  position: relative;
-  color: #fff;
-  background-color: #7dbc5e;
-  border-radius: 100%;
+:root {
+  --rdp-cell-size: 32px;
+  --rdp-accent-color: #315322;
+  --rdp-background-color: #eef5eb;
 }
 
 @mixin partly-available {
@@ -18,12 +10,13 @@
   left: -33px;
   color: #c49407;
   width: 105px;
-  font-size: 12px;
+  font-size: 11px;
   background-color: #fff;
   border-radius: 4px;
   border: 1px solid #555;
-  line-height: 1.1;
+  line-height: 1.2;
   padding: 3px 0;
+  z-index: 5;
 }
 
 @mixin partly-available--cal-only {
@@ -32,277 +25,102 @@
   width: 119px;
 }
 
-.DayPicker-Day.DayPicker-Day--availableUntil12,
-.DayPicker-Day.DayPicker-Day--availableFrom16 {
-  &:hover {
+.rdp-cell {
+  font-size: 12px;
+  & .availableUntil12,
+  & .availableFrom16 {
+    &:hover {
+      position: relative;
+      &::before {
+        @include partly-available();
+        content: 'Vapaa klo 12 asti';
+      }
+    }
+    &.DayPicker-Day--selected {
+      color: #fff;
+      background-color: #e5ad06;
+      &::before {
+        @include partly-available();
+        content: 'Vapaa klo 12 asti';
+      }
+    }
+  }
+  & .availableFrom16 {
+    &.rdp-day.selected::before,
+    &:hover::before {
+      content: 'Vapaa klo 16 alkaen';
+    }
+  }
+  & .availableUntil12,
+  & .availableFrom16 {
+    overflow: visible;
+    &:not(.rdp-day.from):not(.rdp-day.to):not(.rdp-day_disabled) {
+      background-color: #ffc107 !important;
+      color: #555;
+    }
+  }
+  & .rdp-day:not(.rdp-day_disabled):not(.to):not(.from) {
+    background-color: #a8db90;
+    color: #555;
+    border: 1px solid #bbb;
+  }
+  & button {
+    font-family: 'Spartan', sans-serif !important;
+  }
+  & .rdp-day_disabled {
+    color: #b4b3b3;
+    cursor: default;
+    pointer-events: none;
     position: relative;
+    opacity: 1 !important;
     &::before {
-      @include partly-available();
-      content: 'Vapaa klo 12 asti';
+      position: absolute;
+      content: 'X';
+      left: 3px;
+      font-size: 32px;
+      font-weight: 700;
+      color: rgb(233, 233, 233);
+      opacity: 0.5;
+      z-index: -1;
     }
   }
-  &.DayPicker-Day--selected {
+  & .rdp-day_selected {
+    position: relative;
+    border-width: 1px 0 1px 0 !important;
+    border-color: var(--rdp-accent-color) !important;
+    border-style: solid !important;
     color: #fff;
-    background-color: #e5ad06;
-    &::before {
-      @include partly-available();
-      content: 'Vapaa klo 12 asti';
+    background-color: #7dbc5e !important;
+    border-radius: 100%;
+    &:not(.from):not(.to) {
+      background-color: #d7ffc4 !important;
+      border-left: 1px solid #c4e3b6 !important;
+      color: #555;
     }
-  }
-}
-
-.DayPicker-Day--availableFrom16 {
-  &.DayPicker-Day--selected::before,
-  &:hover::before {
-    content: 'Vapaa klo 16 alkaen';
+    &.from {
+      border-left: 1px solid var(--rdp-accent-color) !important;
+    }
+    &.to {
+      border-right: 1px solid var(--rdp-accent-color) !important;
+    }
   }
 }
 
 .calendar-only {
-  .DayPicker-Day--availableUntil12.DayPicker-Day:hover::before {
+  .rdp-day.availableUntil12:hover::before {
     @include partly-available--cal-only();
     content: 'Vapaa klo 12 asti Available until 12';
   }
-  .DayPicker-Day--availableFrom16.DayPicker-Day:hover::before {
+  .rdp-day.availableFrom16:hover::before {
     @include partly-available--cal-only();
     content: 'Vapaa klo 16 alkaen Available from 16';
   }
 }
 
-.Selectable .DayPicker-Day--selected:not(.DayPicker-Day--start):not(.DayPicker-Day--end):not(.DayPicker-Day--outside) {
-  background-color: #d7ffc4 !important;
-  color: #555;
-}
-
-.Selectable .DayPicker-Day {
+.rdp-day {
   border-radius: 0 !important;
 }
 
-.Selectable
-  .DayPicker-Day:not(.DayPicker-Day--disabled):not(.DayPicker-Day--outside):not(.DayPicker-Day--start):not(.DayPicker-Day--end) {
-  background-color: #a8db90;
-  color: #555;
-}
-
-.DayPicker-Day.DayPicker-Day--availableUntil12,
-.DayPicker-Day.DayPicker-Day--availableFrom16 {
-  &:not(.DayPicker-Day--start):not(.DayPicker-Day--end):not(.DayPicker-Day--disabled) {
-    background-color: #ffc107 !important;
-    color: #555;
-  }
-}
-
-.DayPicker {
-  display: inline-block;
-  font-family: 'Spartan', sans-serif !important;
-}
-
-.DayPicker-wrapper {
-  position: relative;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-  padding-bottom: 1rem;
-  flex-direction: row;
-}
-
-.DayPicker-Months {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-.DayPicker-Month {
-  display: table;
-  border-collapse: collapse;
-  border-spacing: 0;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-  margin: 0 1rem;
-  margin-top: 1rem;
-}
-
-.DayPicker *:focus {
-  outline: none;
-}
-
-.DayPicker-NavButton {
-  position: absolute;
-  cursor: pointer;
-  top: 1rem;
-  right: 0.7rem;
-  margin-top: 2px;
-  color: #8b9898;
-  width: 1.25rem;
-  height: 1.25rem;
-  display: inline-block;
-  background-size: 50%;
-  background-repeat: no-repeat;
-  background-position: center;
-}
-
-.DayPicker-NavButton:hover {
-  opacity: 0.8;
-}
-
-.DayPicker-NavButton--prev {
-  margin-right: 1.5rem;
-  background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAwCAYAAAB5R9gVAAAABGdBTUEAALGPC/xhBQAAAVVJREFUWAnN2G0KgjAYwPHpGfRkaZeqvgQaK+hY3SUHrk1YzNLay/OiEFp92I+/Mp2F2Mh2lLISWnflFjzH263RQjzMZ19wgs73ez0o1WmtW+dgA01VxrE3p6l2GLsnBy1VYQOtVSEH/atCCgqpQgKKqYIOiq2CBkqtggLKqQIKgqgCBjpJ2Y5CdJ+zrT9A7HHSTA1dxUdHgzCqJIEwq0SDsKsEg6iqBIEoq/wEcVRZBXFV+QJxV5mBtlDFB5VjYTaGZ2sf4R9PM7U9ZU+lLuaetPP/5Die3ToO1+u+MKtHs06qODB2zBnI/jBd4MPQm1VkY79Tb18gB+C62FdBFsZR6yeIo1YQiLJWMIiqVjQIu1YSCLNWFgijVjYIuhYYCKoWKAiiFgoopxYaKLUWOii2FgkophYp6F3r42W5A9s9OcgNvva8xQaysKXlFytoqdYmQH6tF3toSUo0INq9AAAAAElFTkSuQmCC');
-}
-
-.DayPicker-NavButton--next {
-  background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAwCAYAAAB5R9gVAAAABGdBTUEAALGPC/xhBQAAAXRJREFUWAnN119ugjAcwPHWzJ1gnmxzB/BBE0n24m4xfNkTaOL7wOtsl3AXMMb+Vjaa1BG00N8fSEibPpAP3xAKKs2yjzTPH9RAjhEo9WzPr/Vm8zgE0+gXATAxxuxtqeJ9t5tIwv5AtQAApsfT6TPdbp+kUBcgVwvO51KqVhMkXKsVJFXrOkigVhCIs1Y4iKlWZxB1rX4gwlpRIIpa8SDkWmggrFq4IIRaJKCYWnSgnrXIQV1r8YD+1Vrn+bReagysIFfLABRt31v8oBu1xEBttfRbltmfjgEcWh9snUS2kNdBK6WN1vrOWxObWsz+fjxevsxmB1GQDfINWiev83nhaoiB/CoOU438oPrhXS0WpQ9xc1ZQWxWHqUYe0I0qrKCQKjygDlXIQV2r0IF6ViEBxVTBBSFUQQNhVYkHIVeJAtkNsbQ7c1LtzP6FsObhb2rCKv7NBIGoq4SDmKoEgTirXAcJVGkFSVVpgoSrXICGUMUH/QBZNSUy5XWUhwAAAABJRU5ErkJggg==');
-}
-
-.DayPicker-NavButton--interactionDisabled {
-  display: none;
-}
-
-.DayPicker-Caption {
-  padding: 0 0.5rem;
-  display: table-caption;
-  text-align: left;
-  margin-bottom: 0.5rem;
-}
-
-.DayPicker-Caption > div {
-  font-size: 1rem;
-  font-weight: 500;
-}
-
-.DayPicker-Weekdays {
-  margin-top: 1rem;
-  display: table-header-group;
-}
-
-.DayPicker-WeekdaysRow {
-  display: table-row;
-}
-
-.DayPicker-Weekday {
-  display: table-cell;
-  padding: 0.5rem;
-  font-size: 0.875em;
-  text-align: center;
-  color: #8b9898;
-}
-
-.DayPicker-Weekday abbr[title] {
-  border-bottom: none;
-  text-decoration: none;
-}
-
-.DayPicker-Body {
-  display: table-row-group;
-}
-
-.DayPicker-Week {
-  display: table-row;
-}
-
-.DayPicker-Day {
-  display: table-cell;
-  padding: 0.5rem;
-  text-align: center;
-  cursor: pointer;
-  vertical-align: middle;
-  font-size: 12px;
-}
-
-.DayPicker-Day:not(.DayPicker-Day--outside):not(.DayPicker-Day--disabled) {
-  border: 1px solid #bbb;
-}
-
-.DayPicker-WeekNumber {
-  display: table-cell;
-  padding: 0.5rem;
-  text-align: right;
-  vertical-align: middle;
-  min-width: 1rem;
-  font-size: 0.75em;
-  cursor: pointer;
-  color: #8b9898;
-  border-right: 1px solid #eaecec;
-}
-
-.DayPicker--interactionDisabled .DayPicker-Day {
-  cursor: default;
-}
-
-.DayPicker-Footer {
-  padding-top: 0.5rem;
-}
-
-.DayPicker-TodayButton {
-  border: none;
-  background-image: none;
-  background-color: transparent;
-  box-shadow: none;
-  cursor: pointer;
-  color: #4a90e2;
-  font-size: 0.875em;
-}
-
-/* Default modifiers */
-
-.DayPicker-Day--today {
-  color: #000;
-  font-weight: 700;
-}
-
-.DayPicker-Day--outside {
-  cursor: default;
-  color: #8b9898;
-}
-
-.DayPicker-Day.DayPicker-Day--disabled {
-  color: #b4b3b3;
-  cursor: default;
-  pointer-events: none;
-  position: relative;
-  &:not(.DayPicker-Day--outside)::before {
-    position: absolute;
-    content: 'X';
-    left: 3px;
-    font-size: 39px;
-    font-weight: 700;
-    color: rgb(233, 233, 233);
-    opacity: 0.5;
-    z-index: -1;
-  }
-  /* background-color: #eff1f1; */
-}
-
-/* Example modifiers */
-
-.DayPicker-Day--sunday {
-  background-color: #f7f8f8;
-}
-
-.DayPicker-Day--sunday:not(.DayPicker-Day--today) {
-  color: #dce0e0;
-}
-
-/* DayPickerInput */
-
-.DayPickerInput {
-  display: inline-block;
-}
-
-.DayPickerInput-OverlayWrapper {
-  position: relative;
-}
-
-.DayPickerInput-Overlay {
-  left: 0;
-  z-index: 1;
-  position: absolute;
-  background: white;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
-}
 
 @media only screen and (max-width: 700px) {
   .hide-mobile {

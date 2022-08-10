@@ -6,6 +6,7 @@ import * as fieldActions from '../dux/fields';
 import * as mailActions from '../dux/mail';
 import * as notificationActions from '../dux/notification';
 import '../css/styles.scss';
+import 'react-day-picker/dist/style.css';
 import '../css/DayPicker.scss';
 import ErrorBoundary from './ErrorBoundary';
 import Notification from './Notification';

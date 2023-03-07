@@ -112,7 +112,8 @@ h5.ui.header {
   transition: all 0.3s;
 }
 
-.ui.basic.button {
+.ui.basic.button,
+.button-link {
   color: #555 !important;
 }
 
@@ -120,6 +121,7 @@ h5.ui.header {
 .ui.button:hover,
 .ui.basic.active.button,
 .ui.basic.button:hover,
+.ui.basic.button:hover .button-link,
 .ui.button.primary {
   background-color: #315322 !important;
   color: #fff !important;
@@ -161,7 +163,7 @@ h5.ui.header {
   &:not(.styled) .title ~ .content:not(.ui) {
     padding: 0.2em !important;
   }
-  & .ui.grid >.column {
+  & .ui.grid > .column {
     padding: 0 10px 12px 0;
   }
 }

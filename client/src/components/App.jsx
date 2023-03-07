@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Loader, Dimmer } from 'semantic-ui-react';
+import { Loader, Dimmer, Segment } from 'semantic-ui-react';
 import * as fieldActions from '../dux/fields';
 import * as mailActions from '../dux/mail';
 import * as notificationActions from '../dux/notification';
@@ -13,6 +13,7 @@ import Notification from './Notification';
 import Form from './Form';
 import DatePicker from './DatePicker';
 import { getCalendarEvents, formatDates } from '../utils';
+import { useObjectMapper } from '../helper/useObjectMapper';
 
 const App = ({ hideNotification, notification, fetchFields, fields, sendingEmail, sendMail }) => {
   const [disabled, setDisabledDays] = useState({});
@@ -20,6 +21,7 @@ const App = ({ hideNotification, notification, fetchFields, fields, sendingEmail
   const [availableUntil12, setAvailableUntil12] = useState({});
   const [loading, setLoading] = useState(true);
   const showCalendarOnly = window.location.href.includes('calendar');
+  const { translation } = useObjectMapper();
 
   useEffect(() => {
     fetchFields();
@@ -57,7 +59,7 @@ const App = ({ hideNotification, notification, fetchFields, fields, sendingEmail
 
   return (
     <ErrorBoundary>
-      {!!fields.length && (
+      {!!fields.length ? (
         <div>
           <Dimmer active={sendingEmail} inverted>
             <Loader inverted>Viestiäsi lähetetään ...</Loader>
@@ -82,6 +84,12 @@ const App = ({ hideNotification, notification, fetchFields, fields, sendingEmail
             />
           )}
         </div>
+      ) : (
+        <Segment textAlign="center" padded basic>
+          <Loader active inline>
+            {translation('loadingForm')}
+          </Loader>
+        </Segment>
       )}
       {!!Object.getOwnPropertyNames(notification).length && (
         <Notification notification={notification} hideNotification={hideNotification} />

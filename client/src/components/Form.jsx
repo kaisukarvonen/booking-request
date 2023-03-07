@@ -1,14 +1,6 @@
 import React, { useState } from 'react';
 import ReactDOMServer from 'react-dom/server';
-import {
-  Container,
-  Header,
-  Form as SemanticForm,
-  TextArea,
-  Message,
-  Grid,
-  Button,
-} from 'semantic-ui-react';
+import { Container, Form as SemanticForm, Message, Grid, Button } from 'semantic-ui-react';
 import 'moment/locale/fi';
 import moment from 'moment';
 import Extras from './Extras';
@@ -25,7 +17,7 @@ export const WainolaKeys = [
 const initialForm = {
   from: undefined,
   to: undefined,
-  personAmount: 1,
+  personAmount: undefined,
   activeIndex: 0,
   disabledDays: [],
   moreInformation: '',
@@ -48,6 +40,7 @@ const Form = ({
   const [popupOpen, setPopup] = useState(false);
   const [activePeriod, setActivePeriod] = useState(undefined);
   const { objectValue, translation } = useObjectMapper();
+  const [showPrivateForm, setShowPrivateForm] = useState(false);
 
   const getObject = (key) => fields.find((field) => field.key === key);
   const getObjectTranslation = (key) => {
@@ -222,15 +215,7 @@ const Form = ({
 
   const isValid = () => {
     const date = formData.to || formData.from;
-    const mandatoryFields = [
-      formData.name,
-      formData.email,
-      date,
-      formData.arrivalTime,
-      formData.departTime,
-      formData.personAmount,
-      formData.type,
-    ];
+    const mandatoryFields = [formData.name, formData.email];
     const fieldsFilled = !mandatoryFields.includes('') && !mandatoryFields.includes(undefined);
     const isValidEmail = validEmail(formData.email);
     setErrors({
@@ -260,8 +245,8 @@ const Form = ({
       [getObject('phone').fi]: <a href={`tel:${data.phone}`}>{data.phone}</a>,
       [getObject('address').fi]: data.address,
       [getObject('dates').fi]: dateToStr(data.from, data.to),
-      [getObject('arrivalTime').fi]: `klo ${data.arrivalTime}`,
-      [getObject('departTime').fi]: `klo ${data.departTime}`,
+      [getObject('arrivalTime').fi]: data.arrivalTime && `klo ${data.arrivalTime}`,
+      [getObject('departTime').fi]: data.departTime && `klo ${data.departTime}`,
       [getObject('personAmount').fi]: data.personAmount,
       [getObject('budget').fi]: data.budget,
     };
@@ -338,6 +323,9 @@ const Form = ({
     setFormData({ ...formData, type });
   };
 
+  const showPrivate = formData.type === 'private' && showPrivateForm;
+  const isCompany = formData.type === 'company';
+
   return (
     <div className="main">
       <Container style={{ margin: '40px 0', flexGrow: 1 }}>
@@ -378,6 +366,8 @@ const Form = ({
                 handleOnRadioChange={handleOnRadioChange}
                 handleCottageChange={handleCottageChange}
                 activePeriod={activePeriod}
+                setShowPrivateForm={setShowPrivateForm}
+                showPrivateForm={showPrivate}
               />
               {Object.values(errors).some(Boolean) && (
                 <Message negative>
@@ -387,7 +377,7 @@ const Form = ({
                   )}
                 </Message>
               )}
-              {formData.from && (
+              {(showPrivate || isCompany) && (
                 <>
                   <Extras
                     getObject={getObject}
@@ -395,29 +385,16 @@ const Form = ({
                     values={formData}
                     handleOnChange={handleOnChange}
                   />
-                  <Header as="h3" dividing>
-                    {translation('moreInformationTitle')}
-                  </Header>
-                  <TextArea
-                    rows={2}
-                    value={formData.moreInformation}
-                    id="moreInformation"
-                    onChange={handleOnChange}
-                  />
 
                   <Message>
                     <Message.Content>
-                      {reserveRightsToChanges}
-                      {formData.type === 'private' ? (
-                        <div>
-                          Tutustu{' '}
-                          <a href="https://www.nuuksiontaika.fi/meista/ehdot/" target="_blank">
-                            varausehtoihin
-                          </a>
-                        </div>
-                      ) : (
-                        getObject('paymentInfo')[formData.type].fi
-                      )}
+                      {objectValue('paymentInfo')?.[formData.type]?.fi}
+                      <div>
+                        Tutustu{' '}
+                        <a href="https://www.nuuksiontaika.fi/meista/ehdot/" target="_blank">
+                          varausehtoihin.
+                        </a>
+                      </div>
                     </Message.Content>
                   </Message>
 

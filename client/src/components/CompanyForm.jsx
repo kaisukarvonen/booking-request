@@ -13,13 +13,6 @@ const CompanyForm = ({ values, handleOnChange }) => {
         values={values}
         visitType="companyAccommodations"
       />
-      <Form.Input
-        width={8}
-        label={translation('companyName')}
-        id="companyName"
-        value={values.companyName}
-        onChange={handleOnChange}
-      />
     </>
   );
 };

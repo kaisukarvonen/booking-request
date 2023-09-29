@@ -6,7 +6,7 @@ import CustomAccordion from './CustomAccordion';
 const Extras = ({ values, getObject, showInfo, handleOnChange }) => {
   const { translation } = useObjectMapper();
 
-  const [accordions, setAccordions] = useState([]);
+  const [accordions, setAccordions] = useState(Array.from(Array(10).keys()));
 
   const handleAccordionClick = (e, titleProps) => {
     const { index } = titleProps;

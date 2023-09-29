@@ -12,3 +12,4 @@ fabfile.py
 client/src/config.js
 client/.cache
 client/dist
+client/.parcel-cache

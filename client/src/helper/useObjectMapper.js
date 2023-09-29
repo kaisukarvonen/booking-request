@@ -7,7 +7,7 @@ export const useObjectMapper = () => {
 
   const translation = (key) => {
     const value = objectValue(key);
-    return value?.fi || key;
+    return value?.fi || '';
   };
 
   const getObjectInList = (key, innerKey) =>

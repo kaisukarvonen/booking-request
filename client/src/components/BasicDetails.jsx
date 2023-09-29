@@ -102,57 +102,60 @@ const BasicDetails = ({
       {(showPrivateForm || isCompany) && (
         <>
           {(formData.locationObj?.title || showPrivateForm) && (
-            <SemanticForm.Group>
-              <Popup
-                flowing
-                on="click"
-                position="left center"
-                open={popupOpen}
-                onClose={toggleDatePicker}
-                onOpen={toggleDatePicker}
-                header={
-                  <div className="left-aligned">
-                    <Icon link name="close" onClick={toggleDatePicker} size="large" />
-                  </div>
-                }
-                trigger={
-                  <SemanticForm.Input
-                    width={5}
-                    label={translation('dates')}
-                    icon="calendar outline"
-                    id="dates"
-                    value={dateValue}
-                  />
-                }
-                content={
-                  <>
-                    {renderDatePicker('hide-mobile')}
-                    {renderDatePicker('hide-fullscreen', true)}
-                  </>
-                }
-              />
+            <>
+              <SemanticForm.Group>
+                <Popup
+                  flowing
+                  on="click"
+                  position="left center"
+                  open={popupOpen}
+                  onClose={toggleDatePicker}
+                  onOpen={toggleDatePicker}
+                  header={
+                    <div className="left-aligned">
+                      <Icon link name="close" onClick={toggleDatePicker} size="large" />
+                    </div>
+                  }
+                  trigger={
+                    <SemanticForm.Input
+                      width={5}
+                      label={translation('dates')}
+                      icon="calendar outline"
+                      id="dates"
+                      value={dateValue}
+                    />
+                  }
+                  content={
+                    <>
+                      {renderDatePicker('hide-mobile')}
+                      {renderDatePicker('hide-fullscreen', true)}
+                    </>
+                  }
+                />
 
-              <SemanticForm.Select
-                label={translation('arrivalTime')}
-                width={4}
-                compact
-                placeholder="hh:mm"
-                options={timeOptions()}
-                value={formData.arrivalTime}
-                id="arrivalTime"
-                onChange={handleOnChange}
-              />
-              <SemanticForm.Select
-                label={translation('departTime')}
-                width={4}
-                compact
-                placeholder="hh:mm"
-                options={timeOptions()}
-                value={formData.departTime}
-                id="departTime"
-                onChange={handleOnChange}
-              />
-            </SemanticForm.Group>
+                <SemanticForm.Select
+                  label={translation('arrivalTime')}
+                  width={4}
+                  compact
+                  placeholder="hh:mm"
+                  options={timeOptions()}
+                  value={formData.arrivalTime}
+                  id="arrivalTime"
+                  onChange={handleOnChange}
+                />
+                <SemanticForm.Select
+                  label={translation('departTime')}
+                  width={4}
+                  compact
+                  placeholder="hh:mm"
+                  options={timeOptions()}
+                  value={formData.departTime}
+                  id="departTime"
+                  onChange={handleOnChange}
+                />
+              </SemanticForm.Group>
+              <p>{translation('dateExplanation')}</p>
+            </>
           )}
           <SemanticForm.Group>
             <SemanticForm.Input
@@ -161,6 +164,7 @@ const BasicDetails = ({
               width={3}
               min="1"
               id="personAmount"
+              required
               value={formData.personAmount}
               onChange={handleOnChange}
             />

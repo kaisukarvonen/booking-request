@@ -2,7 +2,6 @@
   "name": "booking-request",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
   "scripts": {
     "start": "parcel src/index.html --port 3000",
     "build": "parcel build src/index.html --public-url './'"
@@ -10,6 +9,7 @@
   "author": "Kaisu Karvonen",
   "license": "ISC",
   "dependencies": {
+    "@swc/helpers": "^0.5.2",
     "axios": "^0.27.2",
     "date-fns": "^2.29.1",
     "moment": "^2.29.4",
@@ -20,7 +20,8 @@
     "react-redux": "^8.0.2",
     "redux": "^4.0.5",
     "redux-saga": "^1.1.3",
-    "semantic-ui-css": "^2.4.1",
+    "regenerator-runtime": "^0.14.0",
+    "semantic-ui-css": "^2.5.0",
     "semantic-ui-react": "^2.1.4"
   },
   "devDependencies": {
@@ -28,15 +29,23 @@
     "@babel/plugin-proposal-class-properties": "^7.8.3",
     "@babel/preset-env": "^7.9.5",
     "@babel/preset-react": "^7.9.4",
+    "@parcel/transformer-sass": "^2.9.3",
     "babel-eslint": "^10.1.0",
+    "buffer": "^6.0.3",
     "core-js": "^3.6.5",
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.10.1",
     "eslint-plugin-import": "^2.20.2",
     "eslint-plugin-jsx-a11y": "^6.2.3",
     "eslint-plugin-react": "^7.19.0",
-    "parcel": "^1.12.4",
-    "regenerator-runtime": "^0.13.5",
+    "parcel": "2.0",
+    "process": "^0.11.10",
     "sass": "^1.26.9"
-  }
+  },
+  "@parcel/transformer-css": {
+    "errorRecovery": true
+  },
+  "browserslist": [
+    "since 2017-06"
+  ]
 }
